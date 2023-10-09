@@ -178,14 +178,21 @@ require('lazy').setup({
       end,
     },
   },
-  {
-    "folke/tokyonight.nvim",
+  { 'rebelot/kanagawa.nvim', 
     lazy = false,
     priority = 1000,
     opts = {
       transparent = true,
     },
   },
+  -- {
+  --   "folke/tokyonight.nvim",
+  --   lazy = false,
+  --   priority = 1000,
+  --   opts = {
+  --     transparent = true,
+  --   },
+  -- },
   {
     -- Set lualine as statusline
     'nvim-lualine/lualine.nvim',
@@ -193,7 +200,7 @@ require('lazy').setup({
     opts = {
       options = {
         icons_enabled = false,
-        theme = 'tokyonight',
+        theme = 'kanagawa-dragon',
         component_separators = '|',
         section_separators = '',
       },
@@ -645,7 +652,7 @@ cmp.setup {
   },
 }
 
-vim.cmd [[colorscheme tokyonight]]
+vim.cmd [[colorscheme kanagawa-dragon]]
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
 --
