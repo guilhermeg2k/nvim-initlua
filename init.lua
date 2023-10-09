@@ -86,10 +86,31 @@ require('lazy').setup({
   {
     "nvim-neo-tree/neo-tree.nvim",
     branch = "v3.x",
+    cmd = "Neotree",
     dependencies = {
       "nvim-lua/plenary.nvim",
       "nvim-tree/nvim-web-devicons", -- not strictly required, but recommended
       "MunifTanjim/nui.nvim",
+    },
+    keys={
+      {
+        "<leader>nt",
+        function()
+          require("neo-tree.command").execute({reveal=true})
+        end,
+        desc = "Explorer NeoTree on current file",
+      },
+    },
+    opts={
+      filesystem = {
+        follow_current_file = {
+          enabled = true,
+        },
+        use_libuv_file_watcher = true,
+      },
+      window= {
+        position="float",
+      },
     },
   },
 
@@ -308,10 +329,6 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   pattern = '*',
 })
 
--- Set neotree keybind
-vim.keymap.set("n", "<C-b>", function() vim.cmd[[:Neotree position=float]] end)
-
--- Configure Prettier with null-ls
 local group = vim.api.nvim_create_augroup("lsp_format_on_save", { clear = false })
 local event = "BufWritePre" -- or "BufWritePost"
 local async = event == "BufWritePost"
