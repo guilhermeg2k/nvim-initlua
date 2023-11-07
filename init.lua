@@ -72,6 +72,9 @@ require('lazy').setup({
   -- NOTE: First, some plugins that don't require any configuration
   'nvim-treesitter/nvim-treesitter-context',
 
+  -- Colors inline previewer
+  'NvChad/nvim-colorizer.lua',
+
   -- Git related plugins
   'tpope/vim-fugitive',
   'tpope/vim-rhubarb',
@@ -107,6 +110,9 @@ require('lazy').setup({
           enabled = true,
         },
         use_libuv_file_watcher = true,
+        filtered_items = {
+          visible = true,
+        },
       },
       window= {
         position="float",
@@ -200,7 +206,7 @@ require('lazy').setup({
     opts = {
       options = {
         icons_enabled = false,
-        theme = 'kanagawa-dragon',
+        theme = 'auto',
         component_separators = '|',
         section_separators = '',
       },
@@ -340,6 +346,10 @@ local group = vim.api.nvim_create_augroup("lsp_format_on_save", { clear = false 
 local event = "BufWritePre" -- or "BufWritePost"
 local async = event == "BufWritePost"
 
+-- Colors inline preview
+require 'colorizer'.setup()
+
+-- Format on autosave
 require('null-ls').setup({
     on_attach = function(client, bufnr)
     if client.supports_method("textDocument/formatting") then
@@ -368,7 +378,7 @@ require('null-ls').setup({
 })
 
 require('prettier').setup({
-  bin = 'prettier', -- or `'prettierd'` (v0.23.3+)
+  bin = 'prettierd', -- or `'prettierd'` (v0.23.3+)
   filetypes = {
     "css",
     "graphql",
@@ -400,7 +410,6 @@ require('telescope').setup {
   },
 }
 
-
 -- Enable telescope fzf native, if installed
 pcall(require('telescope').load_extension, 'fzf')
 
@@ -425,7 +434,7 @@ vim.keymap.set('n', '<leader>sd', require('telescope.builtin').diagnostics, { de
 -- [[ Configure Treesitter ]]
 require'treesitter-context'.setup{
   enable = true, -- Enable this plugin (Can be enabled/disabled later via commands)
-  max_lines = 0, -- How many lines the window should span. Values <= 0 mean no limit.
+  max_lines = 1, -- How many lines the window should span. Values <= 0 mean no limit.
   min_window_height = 0, -- Minimum editor window height to enable context. Values <= 0 mean no limit.
   line_numbers = true,
   multiline_threshold = 20, -- Maximum number of lines to collapse for a single context line
