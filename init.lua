@@ -314,6 +314,8 @@ vim.o.completeopt = 'menuone,noselect'
 -- NOTE: You should make sure your terminal supports this
 vim.o.termguicolors = true
 
+vim.o.tabstop = 2
+
 -- [[ Basic Keymaps ]]
 vim.keymap.set("n", "ma", require("harpoon.mark").add_file)
 vim.keymap.set("n", "<C-l>", require("harpoon.ui").nav_next)
