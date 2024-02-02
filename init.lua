@@ -318,8 +318,8 @@ vim.o.tabstop = 2
 
 -- [[ Basic Keymaps ]]
 vim.keymap.set("n", "ma", require("harpoon.mark").add_file)
-vim.keymap.set("n", "<C-l>", require("harpoon.ui").nav_next)
-vim.keymap.set("n", "<C-j>", require("harpoon.ui").nav_prev)
+vim.keymap.set("n", "mn", require("harpoon.ui").nav_next)
+vim.keymap.set("n", "mp", require("harpoon.ui").nav_prev)
 vim.keymap.set("n", "mm", require("harpoon.ui").toggle_quick_menu)
 vim.keymap.set("n", "<C-d>", "<C-d>zz")
 vim.keymap.set("n", "<C-u>", "<C-u>zz")
@@ -359,8 +359,9 @@ require('null-ls').setup({
         vim.lsp.buf.format({ bufnr = vim.api.nvim_get_current_buf() })
       end, { buffer = bufnr, desc = "[lsp] format" })
 
-      -- format on save
+      -- Format on save
       vim.api.nvim_clear_autocmds({ buffer = bufnr, group = group })
+
       vim.api.nvim_create_autocmd(event, {
         buffer = bufnr,
         group = group,
@@ -514,11 +515,22 @@ require('nvim-treesitter.configs').setup {
   },
 }
 
+local function organize_imports()
+  local params = {
+    command = "_typescript.organizeImports",
+    arguments = {vim.api.nvim_buf_get_name(0)},
+    title = ""
+  }
+  vim.lsp.buf.execute_command(params)
+end
+
 -- Diagnostic keymaps
 vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous diagnostic message' })
 vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'Go to next diagnostic message' })
 vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Open floating diagnostic message' })
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostics list' })
+vim.keymap.set('n', '<leader>fi', organize_imports, { desc = 'Organize TS imports' })
+
 
 -- [[ Configure LSP ]]
 --  This function gets run when an LSP connects to a particular buffer.
@@ -559,11 +571,14 @@ local on_attach = function(_, bufnr)
     print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
   end, '[W]orkspace [L]ist Folders')
 
-  -- Create a command `:Format` local to the LSP buffer
+  -- Create a command `:Format` local to the SP buffer
   vim.api.nvim_buf_create_user_command(bufnr, 'Format', function(_)
     vim.lsp.buf.format()
   end, { desc = 'Format current buffer with LSP' })
 end
+
+
+
 
 -- Enable the following language servers
 --  Feel free to add/remove any LSPs that you want here. They will automatically be installed.
@@ -667,3 +682,4 @@ vim.cmd [[colorscheme kanagawa-dragon]]
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
 --
+
