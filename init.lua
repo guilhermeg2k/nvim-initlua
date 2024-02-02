@@ -522,6 +522,12 @@ local function organize_imports()
     title = ""
   }
   vim.lsp.buf.execute_command(params)
+
+  local function format()
+    vim.cmd [[Format]]
+  end
+  local timer = vim.loop.new_timer()
+  timer:start(500, 0, vim.schedule_wrap(format))
 end
 
 -- Diagnostic keymaps
@@ -682,4 +688,3 @@ vim.cmd [[colorscheme kanagawa-dragon]]
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
 --
-
