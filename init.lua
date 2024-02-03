@@ -78,11 +78,20 @@ require('lazy').setup({
   -- Git related plugins
   'tpope/vim-fugitive',
   'tpope/vim-rhubarb',
+  'f-person/git-blame.nvim',
 
   -- Detect tabstop and shiftwidth automatically
   'tpope/vim-sleuth',
   'jose-elias-alvarez/null-ls.nvim',
   'MunifTanjim/prettier.nvim',
+
+  -- Search and replace by spectre
+  {
+    'nvim-pack/nvim-spectre',
+    dependencies = {
+      'nvim-lua/plenary.nvim',
+    }
+  },
 
   -- NeoTree
   --
@@ -95,16 +104,16 @@ require('lazy').setup({
       "nvim-tree/nvim-web-devicons", -- not strictly required, but recommended
       "MunifTanjim/nui.nvim",
     },
-    keys={
+    keys = {
       {
         "<leader>nt",
         function()
-          require("neo-tree.command").execute({reveal=true})
+          require("neo-tree.command").execute({ reveal = true })
         end,
         desc = "Explorer NeoTree on current file",
       },
     },
-    opts={
+    opts = {
       filesystem = {
         follow_current_file = {
           enabled = true,
@@ -114,8 +123,8 @@ require('lazy').setup({
           visible = true,
         },
       },
-      window= {
-        position="float",
+      window = {
+        position = "float",
       },
     },
   },
@@ -164,7 +173,7 @@ require('lazy').setup({
 
   -- Useful plugin to show you pending keybinds.
   { 'folke/which-key.nvim',  opts = {} },
-    {
+  {
     -- Adds git related signs to the gutter, as well as utilities for managing changes
     'lewis6991/gitsigns.nvim',
     opts = {
@@ -184,7 +193,8 @@ require('lazy').setup({
       end,
     },
   },
-  { 'rebelot/kanagawa.nvim', 
+  {
+    'rebelot/kanagawa.nvim',
     lazy = false,
     priority = 1000,
     opts = {
@@ -218,7 +228,7 @@ require('lazy').setup({
     "lukas-reineke/indent-blankline.nvim",
     main = "ibl",
     opts = {
-       indent = { char = "┊" },
+      indent = { char = "┊" },
     }
   },
 
@@ -269,6 +279,22 @@ require('lazy').setup({
   --    For additional information see: https://github.com/folke/lazy.nvim#-structuring-your-plugins
   -- { import = 'custom.plugins' },
 }, {})
+
+local function organize_imports()
+  local params = {
+    command = "_typescript.organizeImports",
+    arguments = { vim.api.nvim_buf_get_name(0) },
+    title = ""
+  }
+  vim.lsp.buf.execute_command(params)
+
+  local function format()
+    vim.cmd [[Format]]
+  end
+
+  local timer = vim.loop.new_timer()
+  timer:start(500, 0, vim.schedule_wrap(format))
+end
 
 -- [[ Setting options ]]
 -- See `:help vim.o`
@@ -323,8 +349,12 @@ vim.keymap.set("n", "mp", require("harpoon.ui").nav_prev)
 vim.keymap.set("n", "mm", require("harpoon.ui").toggle_quick_menu)
 vim.keymap.set("n", "<C-d>", "<C-d>zz")
 vim.keymap.set("n", "<C-u>", "<C-u>zz")
+
 -- Git
 vim.keymap.set("n", "<leader>gs", vim.cmd.Git)
+-- Toggle gitblame
+vim.keymap.set('n', '<leader>gb', function() vim.cmd [[GitBlameToggle]] end, { desc = 'Organize TS imports' })
+
 -- Keymaps for better default experience
 -- See `:help vim.keymap.set()`
 vim.keymap.set({ 'n', 'v' }, '<Space>', '<Nop>', { silent = true })
@@ -332,6 +362,21 @@ vim.keymap.set({ 'n', 'v' }, '<Space>', '<Nop>', { silent = true })
 -- Remap for dealing with word wrap
 vim.keymap.set('n', 'k', "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
 vim.keymap.set('n', 'j', "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
+
+-- Search and replace 
+vim.keymap.set('n', '<leader>sr', '<cmd>lua require("spectre").toggle()<CR>', {
+    desc = "Toggle Spectre"
+})
+
+vim.keymap.set('n', '<leader>srw', '<cmd>lua require("spectre").open_visual({select_word=true})<CR>', {
+    desc = "Search current word"
+})
+
+-- TS organize imports
+vim.keymap.set('n', '<leader>fi', organize_imports, { desc = 'Organize TS imports' })
+
+-- Format current file
+vim.keymap.set('n', '<leader>f', function () vim.cmd[[Format]] end, { desc = 'Format current file' })
 
 -- [[ Highlight on yank ]]
 -- See `:help vim.highlight.on_yank()`
@@ -347,13 +392,20 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 local group = vim.api.nvim_create_augroup("lsp_format_on_save", { clear = false })
 local event = "BufWritePre" -- or "BufWritePost"
 local async = event == "BufWritePost"
+-- Git Blame
+--
+require('gitblame').setup {
+  message_template = '<author> • <date>',
+  date_format = '%r'
+}
 
 -- Colors inline preview
-require 'colorizer'.setup()
+--
+require 'colorizer'.setup({})
 
 -- Format on autosave
 require('null-ls').setup({
-    on_attach = function(client, bufnr)
+  on_attach = function(client, bufnr)
     if client.supports_method("textDocument/formatting") then
       vim.keymap.set("n", "<Leader>f", function()
         vim.lsp.buf.format({ bufnr = vim.api.nvim_get_current_buf() })
@@ -404,6 +456,7 @@ require('prettier').setup({
 --
 require('telescope').setup {
   defaults = {
+    layout_strategy = 'vertical',
     mappings = {
       i = {
         ['<C-u>'] = false,
@@ -435,18 +488,18 @@ vim.keymap.set('n', '<leader>sg', require('telescope.builtin').live_grep, { desc
 vim.keymap.set('n', '<leader>sd', require('telescope.builtin').diagnostics, { desc = '[S]earch [D]iagnostics' })
 
 -- [[ Configure Treesitter ]]
-require'treesitter-context'.setup{
-  enable = true, -- Enable this plugin (Can be enabled/disabled later via commands)
-  max_lines = 1, -- How many lines the window should span. Values <= 0 mean no limit.
-  min_window_height = 0, -- Minimum editor window height to enable context. Values <= 0 mean no limit.
+require 'treesitter-context'.setup {
+  enable = true,            -- Enable this plugin (Can be enabled/disabled later via commands)
+  max_lines = 1,            -- How many lines the window should span. Values <= 0 mean no limit.
+  min_window_height = 0,    -- Minimum editor window height to enable context. Values <= 0 mean no limit.
   line_numbers = true,
   multiline_threshold = 20, -- Maximum number of lines to collapse for a single context line
-  trim_scope = 'outer', -- Which context lines to discard if `max_lines` is exceeded. Choices: 'inner', 'outer'
-  mode = 'cursor',  -- Line used to calculate context. Choices: 'cursor', 'topline'
+  trim_scope = 'outer',     -- Which context lines to discard if `max_lines` is exceeded. Choices: 'inner', 'outer'
+  mode = 'cursor',          -- Line used to calculate context. Choices: 'cursor', 'topline'
   -- Separator between context and content. Should be a single character string, like '-'.
   -- When separator is set, the context will only show up when there are at least 2 lines above cursorline.
   separator = nil,
-  zindex = 20, -- The Z-index of the context window
+  zindex = 20,     -- The Z-index of the context window
   on_attach = nil, -- (fun(buf: integer): boolean) return false to disable attaching
 };
 
@@ -515,28 +568,12 @@ require('nvim-treesitter.configs').setup {
   },
 }
 
-local function organize_imports()
-  local params = {
-    command = "_typescript.organizeImports",
-    arguments = {vim.api.nvim_buf_get_name(0)},
-    title = ""
-  }
-  vim.lsp.buf.execute_command(params)
-
-  local function format()
-    vim.cmd [[Format]]
-  end
-  local timer = vim.loop.new_timer()
-  timer:start(500, 0, vim.schedule_wrap(format))
-end
 
 -- Diagnostic keymaps
 vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous diagnostic message' })
 vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'Go to next diagnostic message' })
 vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Open floating diagnostic message' })
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostics list' })
-vim.keymap.set('n', '<leader>fi', organize_imports, { desc = 'Organize TS imports' })
-
 
 -- [[ Configure LSP ]]
 --  This function gets run when an LSP connects to a particular buffer.
