@@ -378,6 +378,11 @@ vim.keymap.set('n', '<leader>fi', organize_imports, { desc = 'Organize TS import
 -- Format current file
 vim.keymap.set('n', '<leader>f', function () vim.cmd[[Format]] end, { desc = 'Format current file' })
 
+-- Fuck mykbrd
+--
+vim.api.nvim_set_keymap('n', ':Wa', ':wa', { noremap = true})
+
+
 -- [[ Highlight on yank ]]
 -- See `:help vim.highlight.on_yank()`
 local highlight_group = vim.api.nvim_create_augroup('YankHighlight', { clear = true })
