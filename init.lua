@@ -271,11 +271,11 @@ require('lazy').setup({
 
   { -- Useful plugin to show you pending keybinds.
     'folke/which-key.nvim',
-    event = 'VimEnter', -- Sets the loading event to 'VimEnter'
+    event = 'VeryLazy', -- Sets the loading event to 'VimEnter'
     opts = {
       -- delay between pressing a key and opening which-key (milliseconds)
       -- this setting is independent of vim.opt.timeoutlen
-      delay = 0,
+      delay = 1000,
       icons = {
         -- set icon mappings to true if you have a Nerd Font
         mappings = vim.g.have_nerd_font,
@@ -644,14 +644,14 @@ require('lazy').setup({
         lua_ls = {
           -- cmd = { ... },
           -- filetypes = { ... },
-          -- capabilities = require('blink.cmp').get_lsp_capabilities(),
+          capabilities = require('blink.cmp').get_lsp_capabilities(),
           settings = {
             Lua = {
               diagnostics = {
                 globals = { 'vim' },
               },
               completion = {
-                callSnippet = 'Replace',
+                callSnippet = 'Disable',
               },
               -- You can toggle below to ignore Lua_LS's noisy `missing-fields` warnings
               -- diagnostics = { disable = { 'missing-fields' } },
@@ -774,6 +774,7 @@ require('lazy').setup({
       -- See `:help cmp`
       local cmp = require 'cmp'
       local luasnip = require 'luasnip'
+
       luasnip.config.setup {}
 
       cmp.setup {
@@ -805,9 +806,9 @@ require('lazy').setup({
 
           -- If you prefer more traditional completion keymaps,
           -- you can uncomment the following lines
-          --['<CR>'] = cmp.mapping.confirm { select = true },
-          --['<Tab>'] = cmp.mapping.select_next_item(),
-          --['<S-Tab>'] = cmp.mapping.select_prev_item(),
+          ['<CR>'] = cmp.mapping.confirm { select = true },
+          ['<Tab>'] = cmp.mapping.select_next_item(),
+          ['<S-Tab>'] = cmp.mapping.select_prev_item(),
 
           -- Manually trigger a completion from nvim-cmp.
           --  Generally you don't need this, because nvim-cmp will display
@@ -993,6 +994,9 @@ vim.api.nvim_set_keymap('n', ':WA', ':wa', { noremap = true })
 
 vim.api.nvim_set_keymap('n', ':Wq', ':wq', { noremap = true })
 vim.api.nvim_set_keymap('n', ':WQ', ':wq', { noremap = true })
+
+vim.api.nvim_set_keymap('n', ':Q', ':q', { noremap = true })
+vim.api.nvim_set_keymap('n', ':Q!', ':q!', { noremap = true })
 
 -- Force 2 spaces
 vim.opt.tabstop = 2
