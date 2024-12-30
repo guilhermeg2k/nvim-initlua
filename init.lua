@@ -102,7 +102,7 @@ vim.g.have_nerd_font = false
 vim.opt.number = true
 -- You can also add relative line numbers, to help with jumping.
 --  Experiment for yourself to see if you like it!
--- vim.opt.relativenumber = true
+vim.opt.relativenumber = true
 
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.opt.mouse = 'a'
@@ -991,13 +991,49 @@ vim.cmd [[colorscheme kanagawa-dragon]]
 vim.api.nvim_set_keymap('n', ':Wa', ':wa', { noremap = true })
 vim.api.nvim_set_keymap('n', ':WA', ':wa', { noremap = true })
 
+vim.api.nvim_set_keymap('n', ':Wq', ':wq', { noremap = true })
+vim.api.nvim_set_keymap('n', ':WQ', ':wq', { noremap = true })
+
 -- Force 2 spaces
-vim.opt.expandtab = true
 vim.opt.tabstop = 2
-vim.opt.shiftwidth = 2
-vim.bo.softtabstop = 2
+
+-- Git
+vim.keymap.set('n', '<leader>gs', vim.cmd.Git)
 
 -- GitBlame
+--
+--
+require('gitblame').setup {
+  message_template = '<author> • <date> • <summary>',
+  date_format = '%r',
+}
+
 vim.keymap.set('n', '<leader>gb', function()
   vim.cmd [[GitBlameToggle]]
 end, { desc = 'Git Blame Toggle' })
+
+--Harpoon 2
+--
+local harpoon = require 'harpoon'
+harpoon:setup()
+
+vim.keymap.set('n', 'ma', function()
+  harpoon:list():add()
+end)
+
+vim.keymap.set('n', 'mp', function()
+  harpoon:list():prev()
+end)
+vim.keymap.set('n', 'mn', function()
+  harpoon:list():next()
+end)
+
+vim.keymap.set('n', 'mm', function()
+  harpoon.ui:toggle_quick_menu(harpoon:list())
+end)
+
+-- Hack to always be centered when c-d c-u
+vim.keymap.set('n', '<C-d>', '<C-d>zz')
+vim.keymap.set('n', '<C-u>', '<C-u>zz')
+
+require('colorizer').setup {}
