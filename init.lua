@@ -992,7 +992,12 @@ vim.api.nvim_set_keymap('n', ':Wa', ':wa', { noremap = true })
 vim.api.nvim_set_keymap('n', ':WA', ':wa', { noremap = true })
 
 -- Force 2 spaces
--- vim.opt.expandtab = true
--- vim.opt.tabstop = 2
--- vim.opt.shiftwidth = 2
--- vim.bo.softtabstop = 2
+vim.opt.expandtab = true
+vim.opt.tabstop = 2
+vim.opt.shiftwidth = 2
+vim.bo.softtabstop = 2
+
+-- GitBlame
+vim.keymap.set('n', '<leader>gb', function()
+  vim.cmd [[GitBlameToggle]]
+end, { desc = 'Git Blame Toggle' })
