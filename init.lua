@@ -279,7 +279,7 @@ require('lazy').setup({
     opts = {
       -- delay between pressing a key and opening which-key (milliseconds)
       -- this setting is independent of vim.opt.timeoutlen
-      delay = 1000,
+      delay = 0,
       icons = {
         -- set icon mappings to true if you have a Nerd Font
         mappings = vim.g.have_nerd_font,
@@ -329,6 +329,7 @@ require('lazy').setup({
       },
     },
   },
+
 
   -- NOTE: Plugins can specify dependencies.
   --
@@ -747,28 +748,28 @@ require('lazy').setup({
           lsp_format_opt = 'fallback'
         end
         return {
-          timeout_ms = 500,
+          timeout_ms = 1000,
           lsp_format = lsp_format_opt,
         }
       end,
       formatters_by_ft = {
-        javascript = { 'prettier' },
-        typescript = { 'prettier' },
-        javascriptreact = { 'prettier' },
-        typescriptreact = { 'prettier' },
-        svelte = { 'prettier' },
-        css = { 'prettier' },
-        html = { 'prettier' },
-        json = { 'prettier' },
-        markdown = { 'prettier' },
+        javascript = { 'prettierd' },
+        typescript = { 'prettierd' },
+        javascriptreact = { 'prettierd' },
+        typescriptreact = { 'prettierd' },
+        svelte = { 'prettierd' },
+        css = { 'prettierd' },
+        html = { 'prettierd' },
+        json = { 'prettierd' },
+        markdown = { 'prettierd' },
       },
-      formatters = {
-        prettier = {
-          command = 'bun',
-          args = { 'prettier', '--stdin-filepath', '$FILENAME' },
-          stdin = true,
-        },
-      },
+      -- formatters = {
+      --   prettier = {
+      --     command = 'bun',
+      --     args = { 'prettier', '--stdin-filepath', '$FILENAME' },
+      --     stdin = true,
+      --   },
+      -- },
     },
   },
 
@@ -1076,6 +1077,23 @@ end)
 vim.keymap.set('n', 'mm', function()
   harpoon.ui:toggle_quick_menu(harpoon:list())
 end)
+
+-- Spectre
+vim.keymap.set('n', '<leader>S', '<cmd>lua require("spectre").toggle()<CR>', {
+  desc = "Toggle Spectre"
+})
+
+vim.keymap.set('n', '<leader>Sw', '<cmd>lua require("spectre").open_visual({select_word=true})<CR>', {
+  desc = "Search current word"
+})
+
+vim.keymap.set('v', '<leader>Sw', '<esc><cmd>lua require("spectre").open_visual()<CR>', {
+  desc = "Search current word"
+})
+
+vim.keymap.set('n', '<leader>Sp', '<cmd>lua require("spectre").open_file_search({select_word=true})<CR>', {
+  desc = "Search on current file"
+})
 
 -- Hack to always be centered when c-d c-u
 vim.keymap.set('n', '<C-d>', '<C-d>zz')
